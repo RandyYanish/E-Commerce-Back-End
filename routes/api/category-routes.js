@@ -6,7 +6,7 @@ const { Category, Product } = require('../../models');
 router.get('/', async (req, res) => {
   try {
     const categories = await Category.findAll({
-      include: [{ model: License }],
+      include: [{ model: Product }],
     });
     res.status(200).json(categories);
   } catch (err) {
@@ -54,7 +54,7 @@ router.put('/:id', async (req, res) => {
       res.status(404).json({ message: 'No category with this id!' });
       return;
     }
-    res.status(200).json(category);
+    res.status(200).json({ message: 'Category updated successfully!' });
   } catch (err) {
     res.status(500).json(err);
   }
@@ -72,7 +72,7 @@ router.delete('/:id', async (req, res) => {
       res.status(404).json({ message: 'No category with this id!' });
       return;
     }
-    res.status(200).json(category);
+    res.status(200).json({ message: 'Category deleted successfully!'});
   } catch (err) {
     res.status(500).json(err);
   }

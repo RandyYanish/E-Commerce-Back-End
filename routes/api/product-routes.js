@@ -83,21 +83,26 @@ router.put('/:id', async (req, res) => {
     });
 
     const productTagIds = productTags.map(({ tag_id }) => tag_id);
-    const newProductTags = req.body.tagIds
-      .filter((tag_id) => !productTagIds.includes(tag_id))
-      .map((tag_id) => {
-        return {
-          product_id: req.params.id,
-          tag_id,
-        };
-      });
+
+    let newProductTags = [];
+
+    if (req.body.tagIds && Array.isArray(req.body.tagIds)) {
+      newProductTags = req.body.tagIds
+        .filter((tag_id) => !productTagIds.includes(tag_id))
+        .map((tag_id) => {
+          return {
+            product_id: req.params.id,
+            tag_id,
+          };
+        });
+    }
 
     await Promise.all([
       ProductTag.destroy({ where: { id: productTags.map(({ id }) => id) } }),
       ProductTag.bulkCreate(newProductTags),
     ]);
 
-    res.status(200).json(product);
+    res.status(200).json({ message: 'Product successfully updated!' });
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
@@ -108,7 +113,7 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   // Delete one product by its `id` value
   try {
-    const proudct = await Product.destroy({
+    const product = await Product.destroy({
       where: {
         id: req.params.id,
       },
